@@ -25,6 +25,10 @@ The agent is powered by `gemini-2.5-flash` for multi-step reasoning and orchestr
   - `generate_item_video`: Generates short video clips for menu items using Google's Omni model (`gemini-omni-flash-preview`) in the `global` Vertex AI region. Saves the video as a Playground Artifact (`tool_context.save_artifact`) and uploads video bytes to Google Cloud Storage.
   - `generate_marketing_video`: Generates promotional social media video clips using Google Veo (`veo-3.1-generate-001`).
 
+- **Live Web Access & Browsing**:
+  - `search_web`: Performs real-time Google Web Search queries to retrieve live information, food trends, competitor menus, and market prices.
+  - `fetch_website_content`: Fetches, parses, and extracts clean, readable text from any public website URL (e.g. food blogs, competitor sites, supplier portals).
+
 - **Location & Mapping Services**:
   - `geocode_address`: Geocodes addresses using the Google Maps Platform API.
   - `find_nearby_places`: Finds nearby places and competitor locations.

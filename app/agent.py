@@ -68,6 +68,7 @@ def get_current_time(query: str) -> str:
 from app.tools import (
     add_menu_item,
     calculate_recipe_margins,
+    fetch_website_content,
     find_nearby_places,
     generate_item_image,
     generate_item_video,
@@ -76,6 +77,7 @@ from app.tools import (
     geocode_address,
     get_menu_items,
     search_recipe_inspiration,
+    search_web,
 )
 
 
@@ -165,6 +167,8 @@ root_agent = Agent(
         generate_marketing_image,
         generate_marketing_video,
         search_recipe_inspiration,
+        search_web,
+        fetch_website_content,
         geocode_address,
         find_nearby_places,
         get_weather,

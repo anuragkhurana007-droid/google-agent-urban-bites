@@ -503,3 +503,65 @@ def find_nearby_places(
         return [{"error": f"Places API request error: {str(e)}"}]
 
 
+def search_web(query: str) -> str:
+    """Searches the live web using Google Search for real-time information, food trends, competitor menus, news, or supplier pricing.
+
+    Args:
+        query: Search term or question (e.g., 'Gourmet smash burger trends in Adelaide Australia 2026').
+
+    Returns:
+        Search summary and results grounded with live web information.
+    """
+    genai_client = genai.Client(vertexai=True, project=FIRESTORE_PROJECT_ID, location="us-central1")
+    try:
+        response = genai_client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"Search the web for: {query}",
+            config=types.GenerateContentConfig(
+                tools=[types.Tool(google_search=types.GoogleSearch())]
+            )
+        )
+        return response.text if response.text else "No search results returned."
+    except Exception as e:
+        return f"Web search error: {str(e)}"
+
+
+def fetch_website_content(url: str) -> str:
+    """Fetches, parses, and extracts clean text content from any public website URL (e.g., competitor menu, food blog, supplier page).
+
+    Args:
+        url: Web URL to fetch (e.g., 'https://example.com/menu').
+
+    Returns:
+        Extracted main text content from the webpage.
+    """
+    import httpx
+    from bs4 import BeautifulSoup
+    import html2text
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    try:
+        if not url.startswith("http"):
+            url = "https://" + url
+        res = httpx.get(url, headers=headers, follow_redirects=True, timeout=10.0)
+        res.raise_for_status()
+
+        soup = BeautifulSoup(res.text, "html.parser")
+        for tag in soup(["script", "style", "nav", "footer", "header", "noscript"]):
+            tag.decompose()
+
+        h = html2text.HTML2Text()
+        h.ignore_links = False
+        h.ignore_images = True
+        markdown_text = h.handle(str(soup))
+
+        lines = [line.strip() for line in markdown_text.splitlines() if line.strip()]
+        clean_text = "\n".join(lines)
+        return clean_text[:4000] if clean_text else "No text content found on page."
+    except Exception as e:
+        return f"Error fetching URL {url}: {str(e)}"
+
+
+
